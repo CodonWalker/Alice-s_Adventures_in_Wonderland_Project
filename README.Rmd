@@ -11,12 +11,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Alice's_Adventures_in_Wonderland_Project
+# Alice's Adventures in Wonderland Project
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of Alice's_Adventures_in_Wonderland_Project is to ...
+The goal of Alice's_Adventures_in_Wonderland_Project is to great of the world
 
 What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
