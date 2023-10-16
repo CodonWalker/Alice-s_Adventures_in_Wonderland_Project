@@ -36,6 +36,7 @@ library("tidytext")
 library("tidyverse")
 library("ggraph")
 library("wordcloud2")
+library("thematic")
 
 # 11 Alice's Adventures in Wonderland by Lewis Carroll
 # 55040 The Nursery "Alice" by Lewis Carroll
@@ -47,8 +48,6 @@ library("wordcloud2")
 # Alice in Murderland !!!
 
 data(stop_words)
-
-janeaustenr::austen_books()
 
 books <- gutenbergr::gutenberg_download(
     c(11, 58201, 28069, 24379),

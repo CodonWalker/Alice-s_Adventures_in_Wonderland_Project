@@ -27,6 +27,11 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 You can also embed plots, for example:
 
+
+```
+#> Error : The fig.showtext code chunk option must be TRUE
+```
+
 ![plot of chunk pressure](figure/pressure-1.png)
 
 In that case, don't forget to commit and push the resulting figure files, so they display on GitHub.
@@ -36,18 +41,9 @@ In that case, don't forget to commit and push the resulting figure files, so the
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
-#> ── Attaching core tidyverse packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 2.0.0 ──
-#> ✔ dplyr     1.1.3     ✔ readr     2.1.4
-#> ✔ forcats   1.0.0     ✔ stringr   1.5.0
-#> ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-#> ✔ lubridate 1.9.3     ✔ tidyr     1.3.0
-#> ✔ purrr     1.0.2     
-#> ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-#> ✖ dplyr::filter() masks stats::filter()
-#> ✖ dplyr::lag()    masks stats::lag()
-#> ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 library("ggraph")
 library("wordcloud2")
+library("thematic")
 
 # 11 Alice's Adventures in Wonderland by Lewis Carroll
 # 55040 The Nursery "Alice" by Lewis Carroll
@@ -59,22 +55,6 @@ library("wordcloud2")
 # Alice in Murderland !!!
 
 data(stop_words)
-
-janeaustenr::austen_books()
-#> # A tibble: 73,422 × 2
-#>    text                    book               
-#>  * <chr>                   <fct>              
-#>  1 "SENSE AND SENSIBILITY" Sense & Sensibility
-#>  2 ""                      Sense & Sensibility
-#>  3 "by Jane Austen"        Sense & Sensibility
-#>  4 ""                      Sense & Sensibility
-#>  5 "(1811)"                Sense & Sensibility
-#>  6 ""                      Sense & Sensibility
-#>  7 ""                      Sense & Sensibility
-#>  8 ""                      Sense & Sensibility
-#>  9 ""                      Sense & Sensibility
-#> 10 "CHAPTER 1"             Sense & Sensibility
-#> # ℹ 73,412 more rows
 
 books <- gutenbergr::gutenberg_download(
     c(11, 58201, 28069, 24379),
@@ -119,7 +99,6 @@ thematic_on(
     ),
     qualitative = circlize::rand_color(5)
 )
-#> Error in thematic_on(bg = "#210B34", fg = "#80BF38", accent = "#B73786", : could not find function "thematic_on"
 
 books_tidy_tok %>%
     filter(n > 30) %>%
@@ -150,8 +129,10 @@ books_tidy_tok %>%
         expand = TRUE,
         clip = 'off'
     )
-#> Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family
-#> not found in Windows font database
+#> Error : The fig.showtext code chunk option must be TRUE
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family not found in Windows font database
+
 #> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
 #> family not found in Windows font database
 
@@ -166,7 +147,7 @@ books_tidy_tok %>%
 circlize::colorRamp2()
 #> Error in circlize::colorRamp2(): argument "breaks" is missing, with no default
 circlize::rand_color(2)
-#> [1] "#CE05F8FF" "#DE4D03FF"
+#> [1] "#D3EC89FF" "#FEE3C1FF"
 
 books_words <-
     books %>%
@@ -196,6 +177,7 @@ books_words %>%
     geom_col(show.legend = FALSE) +
     labs(x = "tf-idf", y = NULL) +
     facet_wrap(~ author, ncol = 2, scales = "free_y")
+#> Error : The fig.showtext code chunk option must be TRUE
 ```
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-2.png)
@@ -242,6 +224,7 @@ books_2gm_unity %>%
     geom_col(show.legend = FALSE) +
     facet_wrap(~ title, ncol = 2, scales = "free") +
     labs(x = "tf-idf of bigram", y = NULL)
+#> Error : The fig.showtext code chunk option must be TRUE
 ```
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-3.png)
@@ -258,10 +241,7 @@ bigram_graph %>%
     geom_edge_link() +
     geom_node_point() +
     geom_node_text(aes(label = name), vjust = 1, hjust = 1)
-#> Warning: Using the `size` aesthetic in this geom was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` in the `default_aes` field and elsewhere instead.
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.
+#> Error : The fig.showtext code chunk option must be TRUE
 ```
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-4.png)
@@ -278,11 +258,7 @@ bigram_graph %>%
     ) +
     geom_node_point(color = "lightblue", size = 5) +
     geom_node_text(aes(label = name), vjust = 1, hjust = 1)
-```
-
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-5.png)
-
-```r
+#> Error in y + sin(angles) * r: non-numeric argument to binary operator
 
 book_alice_section <-
     books %>%
@@ -326,9 +302,10 @@ b_alice_cor %>%
     ) +
     theme(legend.position = "none") +
     coord_flip()
+#> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-6.png)
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-5.png)
 
 ```r
 
@@ -339,9 +316,10 @@ b_alice_cor %>%
     geom_edge_link(aes(edge_alpha = correlation), show.legend = FALSE) +
     geom_node_point(color = "lightblue", size = 5) +
     geom_node_text(aes(label = name), repel = TRUE)
+#> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-7.png)
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-6.png)
 
 ```r
 
@@ -357,9 +335,10 @@ books_tidy %>%
     geom_col(show.legend = FALSE) +
     facet_wrap(~ title, ncol = 2, scales = "free_x")
 #> Joining with `by = join_by(word)`
+#> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-8.png)
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-7.png)
 
 ```r
 
@@ -410,9 +389,10 @@ bind_rows(
     ggplot(aes(index, sentiment, fill = method)) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ method, ncol = 1, scales = "free_y")
+#> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-9.png)
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-8.png)
 
 ```r
 
@@ -422,9 +402,10 @@ bind_rows(
 ) %>%
     ggplot(aes(index, sentiment, fill = method)) +
     geom_col(show.legend = TRUE)
+#> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-10.png)
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-9.png)
 
 ```r
 
@@ -539,11 +520,12 @@ frequency %>%
     facet_wrap(~ author, ncol = 2, scales = "free_y") +
     labs(y = "Lewis Carroll", x = NULL) +
     theme(legend.position = "none")
+#> Error : The fig.showtext code chunk option must be TRUE
 #> Warning: Removed 15439 rows containing missing values (`geom_point()`).
 #> Warning: Removed 15442 rows containing missing values (`geom_text()`).
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-11.png)
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-10.png)
 
 ```r
 
@@ -585,21 +567,16 @@ books_tidy %>%
         y = "Sentiment"
     ) +
     theme(legend.position = "none")
+#> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-12.png)
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-11.png)
 
 ```r
 
 # Venn and UpSetR plots
 
 library("ggVennDiagram")
-#> 
-#> Attaching package: 'ggVennDiagram'
-#> 
-#> The following object is masked from 'package:ggraph':
-#> 
-#>     circle
 library("ComplexUpset")
 
 venn_data <-
@@ -652,24 +629,9 @@ ComplexUpset::upset(
 labs(
     x = "Authors"
 )
-#> Warning: thematic was unable to resolve `bg='auto'`. Try providing an actual
-#> color (or `NA`) to the `bg` argument of `thematic_on()`. By the way, 'auto' is
-#> only officially supported in `shiny::renderPlot()`, some rmarkdown scenarios
-#> (specifically, `html_document()` with `theme!=NULL`), in RStudio, or if
-#> `auto_config_set()` is used.
-#> Warning: thematic was unable to resolve `fg='auto'`. Try providing an actual
-#> color (or `NA`) to the `fg` argument of `thematic_on()`. By the way, 'auto' is
-#> only officially supported in `shiny::renderPlot()`, some rmarkdown scenarios
-#> (specifically, `html_document()` with `theme!=NULL`), in RStudio, or if
-#> `auto_config_set()` is used.
-#> Warning: thematic was unable to resolve `accent='auto'`. Try providing an
-#> actual color (or `NA`) to the `accent` argument of `thematic_on()`. By the way,
-#> 'auto' is only officially supported in `shiny::renderPlot()`, some rmarkdown
-#> scenarios (specifically, `html_document()` with `theme!=NULL`), in RStudio, or
-#> if `auto_config_set()` is used.
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-13.png)
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-12.png)
 
 ```r
 
