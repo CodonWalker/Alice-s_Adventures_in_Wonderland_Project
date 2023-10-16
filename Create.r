@@ -12,3 +12,5 @@ check()
 use_mit_license()
 
 use_github()
+
+use_readme_rmd()
