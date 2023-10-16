@@ -27,14 +27,27 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 You can also embed plots, for example:
 
-
-```
-#> Error : The fig.showtext code chunk option must be TRUE
-```
-
 ![plot of chunk pressure](figure/pressure-1.png)
 
 In that case, don't forget to commit and push the resulting figure files, so they display on GitHub.
+
+
+
+```
+#> Joining with `by = join_by(word)`
+#> Error : The fig.showtext code chunk option must be TRUE
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family not found in Windows font database
+
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family not found in Windows font database
+
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family not found in Windows font database
+```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+
 
 
 ```r
@@ -140,7 +153,7 @@ books_tidy_tok %>%
 #> family not found in Windows font database
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
 
 ```r
 
@@ -180,7 +193,7 @@ books_words %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-2.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-2.png)
 
 ```r
 
@@ -227,7 +240,7 @@ books_2gm_unity %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-3.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-3.png)
 
 ```r
 
@@ -244,7 +257,7 @@ bigram_graph %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-4.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-4.png)
 
 ```r
 
@@ -305,7 +318,7 @@ b_alice_cor %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-5.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-5.png)
 
 ```r
 
@@ -319,7 +332,7 @@ b_alice_cor %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-6.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-6.png)
 
 ```r
 
@@ -338,7 +351,7 @@ books_tidy %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-7.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-7.png)
 
 ```r
 
@@ -392,7 +405,7 @@ bind_rows(
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-8.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-8.png)
 
 ```r
 
@@ -405,7 +418,7 @@ bind_rows(
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-9.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-9.png)
 
 ```r
 
@@ -525,7 +538,7 @@ frequency %>%
 #> Warning: Removed 15442 rows containing missing values (`geom_text()`).
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-10.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-10.png)
 
 ```r
 
@@ -570,7 +583,7 @@ books_tidy %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-11.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-11.png)
 
 ```r
 
@@ -631,7 +644,7 @@ labs(
 )
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-12.png)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-12.png)
 
 ```r
 

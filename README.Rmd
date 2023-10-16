@@ -30,6 +30,102 @@ plot(pressure)
 
 In that case, don't forget to commit and push the resulting figure files, so they display on GitHub.
 
+
+```{r, echo = FALSE}
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
+
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+books_tidy_tok <-
+    books_tidy %>%
+    unnest_tokens(word, text) %>%
+    anti_join(stop_words) %>%
+    filter(chapter > 0) %>%
+    group_by(author) %>%
+    count(word, sort = TRUE) %>%
+    ungroup()
+
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
+
+books_tidy_tok %>%
+    filter(n > 30) %>%
+    mutate(word = reorder(word, n)) %>%
+    ggplot(aes(n, word, fill = n)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ author, scales = "free") +
+    labs(
+        title = "Title",
+        x = "Number",
+        y = NULL,
+        caption = "Data: NMMAPS"
+    ) +
+    theme(
+        axis.title = element_text(color = "sienna", size = 15, face = "bold"),
+        axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 10),
+        #strip.background = element_rect(fill = "purple"),
+        plot.title = element_text(
+            family = "Alice in Wonderland",
+            hjust = .5,
+            size = 25
+        ),
+        plot.title.position = "plot",
+        plot.caption = element_text(hjust = 0),
+        plot.caption.position = "plot"
+    ) +
+    coord_cartesian(
+        expand = TRUE,
+        clip = 'off'
+    )
+
+```
+
+
 ```{r}
 library("gutenbergr")
 library("tidytext")
