@@ -27,6 +27,11 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 You can also embed plots, for example:
 
+
+```
+#> Error : The fig.showtext code chunk option must be TRUE
+```
+
 ![plot of chunk pressure](figure/pressure-1.png)
 
 In that case, don't forget to commit and push the resulting figure files, so they display on GitHub.
@@ -37,17 +42,132 @@ In that case, don't forget to commit and push the resulting figure files, so the
 #> Joining with `by = join_by(word)`
 #> Error : The fig.showtext code chunk option must be TRUE
 #> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-#> family not found in Windows font database
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
 
 #> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-#> family not found in Windows font database
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
 
 #> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-#> family not found in Windows font database
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
+
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
+
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
+
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
+
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
+
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
+
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
+
+#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+#> family 'Alice in Wonderland' not found, will use 'sans' instead
+#> Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+#> font family 'Alice in Wonderland' not found, will use 'sans' instead
+
+#> Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+#> font family 'Alice in Wonderland' not found, will use 'sans' instead
 ```
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
 
+Blah Blah
+
+
+```r
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
+
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
+
+books_words <-
+    books %>%
+    unnest_tokens(word, text) %>%
+    count(author, word, sort = TRUE)
+
+books_words <-
+    books_words %>%
+    bind_tf_idf(word, author, n) %>%
+    arrange(desc(tf_idf)) %>%
+    mutate(
+        author = factor(author, levels = c(
+            "Carroll, Lewis",
+            "Bangs, John Kendrick",
+            "Carryl, Charles E. (Charles Edward)",
+            "Saki"
+            )
+        )
+    )
+
+books_words %>%
+    group_by(author) %>%
+    slice_max(tf_idf, n = 15) %>%
+    ungroup() %>%
+    mutate(word = reorder(word, tf_idf)) %>%
+    ggplot(aes(tf_idf, word, fill = author)) +
+    geom_col(show.legend = FALSE) +
+    labs(x = "tf-idf", y = NULL) +
+    facet_wrap(~ author, ncol = 2, scales = "free_y")
+#> Error : The fig.showtext code chunk option must be TRUE
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
+
+adwwadwad
 
 
 ```r
@@ -113,55 +233,6 @@ thematic_on(
     qualitative = circlize::rand_color(5)
 )
 
-books_tidy_tok %>%
-    filter(n > 30) %>%
-    mutate(word = reorder(word, n)) %>%
-    ggplot(aes(n, word, fill = n)) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ author, scales = "free") +
-    labs(
-        title = "Title",
-        x = "Number",
-        y = NULL,
-        caption = "Data: NMMAPS"
-    ) +
-    theme(
-        axis.title = element_text(color = "sienna", size = 15, face = "bold"),
-        axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 10),
-        #strip.background = element_rect(fill = "purple"),
-        plot.title = element_text(
-            family = "Alice in Wonderland",
-            hjust = .5,
-            size = 25
-        ),
-        plot.title.position = "plot",
-        plot.caption = element_text(hjust = 0),
-        plot.caption.position = "plot"
-    ) +
-    coord_cartesian(
-        expand = TRUE,
-        clip = 'off'
-    )
-#> Error : The fig.showtext code chunk option must be TRUE
-#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-#> family not found in Windows font database
-
-#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-#> family not found in Windows font database
-
-#> Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-#> family not found in Windows font database
-```
-
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
-
-```r
-
-circlize::colorRamp2()
-#> Error in circlize::colorRamp2(): argument "breaks" is missing, with no default
-circlize::rand_color(2)
-#> [1] "#D3EC89FF" "#FEE3C1FF"
-
 books_words <-
     books %>%
     unnest_tokens(word, text) %>%
@@ -180,22 +251,6 @@ books_words <-
             )
         )
     )
-
-books_words %>%
-    group_by(author) %>%
-    slice_max(tf_idf, n = 15) %>%
-    ungroup() %>%
-    mutate(word = reorder(word, tf_idf)) %>%
-    ggplot(aes(tf_idf, word, fill = author)) +
-    geom_col(show.legend = FALSE) +
-    labs(x = "tf-idf", y = NULL) +
-    facet_wrap(~ author, ncol = 2, scales = "free_y")
-#> Error : The fig.showtext code chunk option must be TRUE
-```
-
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-2.png)
-
-```r
 
 books_tidy_2gm <-
     books_tidy %>%
@@ -240,14 +295,139 @@ books_2gm_unity %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-3.png)
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+
+awdwad
+
 
 ```r
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
 
-bigram_graph <-
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+books_tidy_tok <-
+    books_tidy %>%
+    unnest_tokens(word, text) %>%
+    anti_join(stop_words) %>%
+    filter(chapter > 0) %>%
+    group_by(author) %>%
+    count(word, sort = TRUE) %>%
+    ungroup()
+#> Joining with `by = join_by(word)`
+
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
+
+
+books_words <-
+    books %>%
+    unnest_tokens(word, text) %>%
+    count(author, word, sort = TRUE)
+
+books_words <-
+    books_words %>%
+    bind_tf_idf(word, author, n) %>%
+    arrange(desc(tf_idf)) %>%
+    mutate(
+        author = factor(author, levels = c(
+            "Carroll, Lewis",
+            "Bangs, John Kendrick",
+            "Carryl, Charles E. (Charles Edward)",
+            "Saki"
+            )
+        )
+    )
+
+books_tidy_2gm <-
+    books_tidy %>%
+    unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+    filter(
+        !is.na(bigram)
+    ) %>%
+    separate(bigram, c("word1", "word2", sep = " ")) %>%
+    select(!8) %>%
+    filter(
+        !word1 %in% stop_words$word,
+        !word2 %in% stop_words$word
+    )
+#> Warning: Expected 3 pieces. Additional pieces discarded in 108 rows [2140,
+#> 2229, 2237, 2580, 2581, 2655, 2656, 2658, 2659, 2729, 2730, 4168, 4169, 6832,
+#> 6835, 6954, 6955, 8117, 8771, 8772, ...].
+#> Warning: Expected 3 pieces. Missing pieces filled with `NA` in 61812 rows [2,
+#> 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, ...].
+
+bigram_counts <-
+    books_tidy_2gm %>%
+    group_by(author) %>%
+    count(word1, word2, sort = TRUE) %>%
+    ungroup()
+
+books_2gm_unity <-
+    books_tidy_2gm %>%
+    unite(bigram, word1, word2, sep = " ") %>%
+    count(title, bigram, sort = TRUE) %>%
+    bind_tf_idf(bigram, title, n)
+
     bigram_counts %>%
     filter(n > 5) %>%
     igraph::graph_from_data_frame()
+#> IGRAPH d419aed DN-- 33 40 -- 
+#> + attr: name (v/c), word2 (e/c), n (e/n)
+#> + edges from d419aed (vertex names):
+#>  [1] Carroll, Lewis                     ->mock     
+#>  [2] Bangs, John Kendrick               ->march    
+#>  [3] Carryl, Charles E. (Charles Edward)->sir      
+#>  [4] Carroll, Lewis                     ->march    
+#>  [5] Bangs, John Kendrick               ->white    
+#>  [6] Carryl, Charles E. (Charles Edward)->bob      
+#>  [7] Bangs, John Kendrick               ->municipal
+#>  [8] Bangs, John Kendrick               ->cried    
+#> + ... omitted several edges
 
 bigram_graph %>%
     ggraph(layout = "fr") +
@@ -257,9 +437,126 @@ bigram_graph %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-4.png)
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+
+awdwad
+
 
 ```r
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
+
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+books_tidy_tok <-
+    books_tidy %>%
+    unnest_tokens(word, text) %>%
+    anti_join(stop_words) %>%
+    filter(chapter > 0) %>%
+    group_by(author) %>%
+    count(word, sort = TRUE) %>%
+    ungroup()
+#> Joining with `by = join_by(word)`
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
+
+books_words <-
+    books %>%
+    unnest_tokens(word, text) %>%
+    count(author, word, sort = TRUE)
+
+books_words <-
+    books_words %>%
+    bind_tf_idf(word, author, n) %>%
+    arrange(desc(tf_idf)) %>%
+    mutate(
+        author = factor(author, levels = c(
+            "Carroll, Lewis",
+            "Bangs, John Kendrick",
+            "Carryl, Charles E. (Charles Edward)",
+            "Saki"
+            )
+        )
+    )
+
+books_tidy_2gm <-
+    books_tidy %>%
+    unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+    filter(
+        !is.na(bigram)
+    ) %>%
+    separate(bigram, c("word1", "word2", sep = " ")) %>%
+    select(!8) %>%
+    filter(
+        !word1 %in% stop_words$word,
+        !word2 %in% stop_words$word
+    )
+#> Warning: Expected 3 pieces. Additional pieces discarded in 108 rows [2140,
+#> 2229, 2237, 2580, 2581, 2655, 2656, 2658, 2659, 2729, 2730, 4168, 4169, 6832,
+#> 6835, 6954, 6955, 8117, 8771, 8772, ...].
+#> Warning: Expected 3 pieces. Missing pieces filled with `NA` in 61812 rows [2,
+#> 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, ...].
+
+bigram_counts <-
+    books_tidy_2gm %>%
+    group_by(author) %>%
+    count(word1, word2, sort = TRUE) %>%
+    ungroup()
+
+books_2gm_unity <-
+    books_tidy_2gm %>%
+    unite(bigram, word1, word2, sep = " ") %>%
+    count(title, bigram, sort = TRUE) %>%
+    bind_tf_idf(bigram, title, n)
+
+bigram_graph <-
+    bigram_counts %>%
+    filter(n > 5) %>%
+    igraph::graph_from_data_frame()
 
 a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
 
@@ -272,6 +569,143 @@ bigram_graph %>%
     geom_node_point(color = "lightblue", size = 5) +
     geom_node_text(aes(label = name), vjust = 1, hjust = 1)
 #> Error in y + sin(angles) * r: non-numeric argument to binary operator
+```
+
+awdwadwad
+
+
+```r
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
+
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+books_tidy_tok <-
+    books_tidy %>%
+    unnest_tokens(word, text) %>%
+    anti_join(stop_words) %>%
+    filter(chapter > 0) %>%
+    group_by(author) %>%
+    count(word, sort = TRUE) %>%
+    ungroup()
+#> Joining with `by = join_by(word)`
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
+
+books_words <-
+    books %>%
+    unnest_tokens(word, text) %>%
+    count(author, word, sort = TRUE)
+
+books_words <-
+    books_words %>%
+    bind_tf_idf(word, author, n) %>%
+    arrange(desc(tf_idf)) %>%
+    mutate(
+        author = factor(author, levels = c(
+            "Carroll, Lewis",
+            "Bangs, John Kendrick",
+            "Carryl, Charles E. (Charles Edward)",
+            "Saki"
+            )
+        )
+    )
+
+books_tidy_2gm <-
+    books_tidy %>%
+    unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+    filter(
+        !is.na(bigram)
+    ) %>%
+    separate(bigram, c("word1", "word2", sep = " ")) %>%
+    select(!8) %>%
+    filter(
+        !word1 %in% stop_words$word,
+        !word2 %in% stop_words$word
+    )
+#> Warning: Expected 3 pieces. Additional pieces discarded in 108 rows [2140,
+#> 2229, 2237, 2580, 2581, 2655, 2656, 2658, 2659, 2729, 2730, 4168, 4169, 6832,
+#> 6835, 6954, 6955, 8117, 8771, 8772, ...].
+#> Warning: Expected 3 pieces. Missing pieces filled with `NA` in 61812 rows [2,
+#> 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, ...].
+
+bigram_counts <-
+    books_tidy_2gm %>%
+    group_by(author) %>%
+    count(word1, word2, sort = TRUE) %>%
+    ungroup()
+
+books_2gm_unity <-
+    books_tidy_2gm %>%
+    unite(bigram, word1, word2, sep = " ") %>%
+    count(title, bigram, sort = TRUE) %>%
+    bind_tf_idf(bigram, title, n)
+
+books_2gm_unity %>%
+    arrange(desc(tf_idf)) %>%
+    group_by(title) %>%
+    slice_max(tf_idf, n = 10) %>%
+    ungroup() %>%
+    mutate(bigram = reorder(bigram, tf_idf)) %>%
+    ggplot(aes(tf_idf, bigram, fill = title)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ title, ncol = 2, scales = "free") +
+    labs(x = "tf-idf of bigram", y = NULL)
+#> Error : The fig.showtext code chunk option must be TRUE
+```
+
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+
+```r
+
+bigram_graph <-
+    bigram_counts %>%
+    filter(n > 5) %>%
+    igraph::graph_from_data_frame()
 
 book_alice_section <-
     books %>%
@@ -318,9 +752,153 @@ b_alice_cor %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-5.png)
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-2.png)
+
+awdawda
+
 
 ```r
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
+
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+books_tidy_tok <-
+    books_tidy %>%
+    unnest_tokens(word, text) %>%
+    anti_join(stop_words) %>%
+    filter(chapter > 0) %>%
+    group_by(author) %>%
+    count(word, sort = TRUE) %>%
+    ungroup()
+#> Joining with `by = join_by(word)`
+
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
+
+books_words <-
+    books %>%
+    unnest_tokens(word, text) %>%
+    count(author, word, sort = TRUE)
+
+books_words <-
+    books_words %>%
+    bind_tf_idf(word, author, n) %>%
+    arrange(desc(tf_idf)) %>%
+    mutate(
+        author = factor(author, levels = c(
+            "Carroll, Lewis",
+            "Bangs, John Kendrick",
+            "Carryl, Charles E. (Charles Edward)",
+            "Saki"
+            )
+        )
+    )
+
+books_tidy_2gm <-
+    books_tidy %>%
+    unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+    filter(
+        !is.na(bigram)
+    ) %>%
+    separate(bigram, c("word1", "word2", sep = " ")) %>%
+    select(!8) %>%
+    filter(
+        !word1 %in% stop_words$word,
+        !word2 %in% stop_words$word
+    )
+#> Warning: Expected 3 pieces. Additional pieces discarded in 108 rows [2140,
+#> 2229, 2237, 2580, 2581, 2655, 2656, 2658, 2659, 2729, 2730, 4168, 4169, 6832,
+#> 6835, 6954, 6955, 8117, 8771, 8772, ...].
+#> Warning: Expected 3 pieces. Missing pieces filled with `NA` in 61812 rows [2,
+#> 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, ...].
+
+bigram_counts <-
+    books_tidy_2gm %>%
+    group_by(author) %>%
+    count(word1, word2, sort = TRUE) %>%
+    ungroup()
+
+books_2gm_unity <-
+    books_tidy_2gm %>%
+    unite(bigram, word1, word2, sep = " ") %>%
+    count(title, bigram, sort = TRUE) %>%
+    bind_tf_idf(bigram, title, n)
+bigram_graph <-
+    bigram_counts %>%
+    filter(n > 5) %>%
+    igraph::graph_from_data_frame()
+
+book_alice_section <-
+    books %>%
+    filter(title == "Alice's Adventures in Wonderland") %>%
+    mutate(
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    filter(chapter > 0) %>%
+    mutate(section = row_number() %/% 5) %>%
+    filter(section > 0) %>%
+    unnest_tokens(word, text) %>%
+    filter(!word %in% stop_words$word)
+
+b_alice_cor <-
+    book_alice_section %>%
+    widyr::pairwise_count(word, section, sort = TRUE)
+
+b_alice_cor <-
+    book_alice_section %>%
+    group_by(word) %>%
+    filter(n() > 20) %>%
+    widyr::pairwise_cor(word, section, sort = TRUE)
 
 b_alice_cor %>%
     filter(correlation > .3) %>%
@@ -332,11 +910,62 @@ b_alice_cor %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-6.png)
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+
+adwwadwad
+
 
 ```r
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
 
-# Sentiment analysis
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
 
 books_tidy %>%
     unnest_tokens(word, text) %>%
@@ -351,7 +980,77 @@ books_tidy %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-7.png)
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
+
+awdwad
+
+
+```r
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
+
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
+
+books_tidy %>%
+    unnest_tokens(word, text) %>%
+    inner_join(get_sentiments("nrc"), relationship = "many-to-many") %>%
+    count(title, index = linenumber %/% 10, sentiment, sort = TRUE) %>%
+    pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>%
+    mutate(sentiment  = (positive + trust + joy + surprise) - (anticipation + negative + disgust + anger + fear + sadness)) %>%
+    ggplot(aes(index, sentiment, fill = title)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ title, ncol = 2, scales = "free_x")
+#> Joining with `by = join_by(word)`
+#> Error : The fig.showtext code chunk option must be TRUE
+```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
 
 ```r
 
@@ -405,7 +1104,7 @@ bind_rows(
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-8.png)
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-2.png)
 
 ```r
 
@@ -418,9 +1117,63 @@ bind_rows(
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-9.png)
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-3.png)
+
+awdwadwad
+
 
 ```r
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
+
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
+
 
 set.seed(2023)
 wc <-
@@ -431,7 +1184,7 @@ wc <-
     filter(chapter > 0) %>%
     count(word, sort = TRUE) %>%
     wordcloud2::wordcloud2(
-        figPath = "I:/Downloads/alice-in-wonderland-silhouette-png-1.jpg",
+        figPath = "Img/Alice.png",
         backgroundColor = "#210B34",
         color = circlize::rand_color(
             n = 2314,
@@ -443,7 +1196,10 @@ wc <-
     ) +
     wordcloud2::WCtheme(1)
 #> Joining with `by = join_by(word)`
-#> Error in wordcloud2::wordcloud2(., figPath = "I:/Downloads/alice-in-wonderland-silhouette-png-1.jpg", : cannot find fig in the figPath
+wc
+#> PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.
+#> PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.
+#> Error in path.expand(path): invalid 'path' argument
 
 wc <-
     books_tidy %>%
@@ -470,8 +1226,66 @@ wc <-
         y = "Relative Frequency"
     )
 #> Joining with `by = join_by(word)`
+wc
+#> Error : The fig.showtext code chunk option must be TRUE
+```
 
-# Word frequencies
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+
+awdwadwad
+
+
+```r
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
+
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
+
+thematic_on(
+    bg = "#210B34",
+    fg = "#80BF38",
+    accent = "#B73786",
+    font = font_spec("Alice", scale = 1),
+    sequential = sequential_gradient(
+        fg_low = FALSE,
+        fg_weight = 0,
+        bg_weight = 1
+    ),
+    qualitative = circlize::rand_color(5)
+)
 
 Charles_E <-
     books_tidy %>%
@@ -538,7 +1352,7 @@ frequency %>%
 #> Warning: Removed 15442 rows containing missing values (`geom_text()`).
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-10.png)
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
 
 ```r
 
@@ -583,14 +1397,51 @@ books_tidy %>%
 #> Error : The fig.showtext code chunk option must be TRUE
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-11.png)
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-2.png)
+
+awdwadwad
+
 
 ```r
-
-# Venn and UpSetR plots
-
+library("gutenbergr")
+library("tidytext")
+library("tidyverse")
+library("ggraph")
+library("wordcloud2")
+library("thematic")
 library("ggVennDiagram")
 library("ComplexUpset")
+
+# 11 Alice's Adventures in Wonderland by Lewis Carroll
+# 55040 The Nursery "Alice" by Lewis Carroll
+
+# 58201 The Westminster Alice by Saki
+# 28069 Alice in Blunderland: An Iridescent Dream by John Kendrick Bangs
+# 25031 Davy and the Goblin by Charles E. Carryl
+# 24379 The Admiral's Caravan by Charles E. Carryl
+# Alice in Murderland !!!
+
+data(stop_words)
+
+books <- gutenbergr::gutenberg_download(
+    c(11, 58201, 28069, 24379),
+    mirror = "https://gutenberg.pglaf.org/",
+    meta_fields = c("title", "author")
+)
+
+books_tidy <-
+    books %>%
+    group_by(author) %>%
+    mutate(
+        linenumber = row_number(),
+        chapter = cumsum(str_detect(
+            text,
+            regex("^chapter [\\divxlc]",
+            ignore_case = TRUE)
+            )
+        )
+    ) %>%
+    ungroup()
 
 venn_data <-
     books_tidy %>%
@@ -623,11 +1474,6 @@ venn_data_v <- list(
     D = Saki_V$word
 )
 
-names(venn_data_v)
-#> [1] "A" "B" "C" "D"
-
-library("thematic")
-
 thematic_on(
   bg = "auto", fg = "auto", accent = "auto", font = NA,
   sequential = sequential_gradient(), qualitative = okabe_ito()
@@ -644,7 +1490,7 @@ labs(
 )
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-12.png)
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
 
 ```r
 
@@ -660,4 +1506,11 @@ testt <- venn_data_v %>%
         subtitle = "generated by `ggVennDiagram`"
     ) +
     theme(legend.position = "none")
+
+testt
 ```
+
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-2.png)
+
+Blah-blah
+
