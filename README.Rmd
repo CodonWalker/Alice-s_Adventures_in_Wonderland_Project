@@ -127,7 +127,7 @@ books_tidy_tok %>%
 
 Blah Blah
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -212,7 +212,7 @@ books_words %>%
 
 adwwadwad
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -301,7 +301,7 @@ books_2gm_unity %>%
 
 awdwad
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -422,7 +422,7 @@ bigram_graph %>%
 
 awdwad
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -546,7 +546,7 @@ bigram_graph %>%
 
 awdwadwad
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -713,7 +713,7 @@ b_alice_cor %>%
 
 awdawda
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -861,7 +861,7 @@ b_alice_cor %>%
 
 adwwadwad
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -926,7 +926,7 @@ books_tidy %>%
 
 awdwad
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -1039,7 +1039,7 @@ bind_rows(
 
 awdwadwad
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -1144,7 +1144,7 @@ wc
 
 awdwadwad
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
@@ -1285,7 +1285,7 @@ books_tidy %>%
 
 awdwadwad
 
-```{r}
+```{r, echo = FALSE}
 library("gutenbergr")
 library("tidytext")
 library("tidyverse")
