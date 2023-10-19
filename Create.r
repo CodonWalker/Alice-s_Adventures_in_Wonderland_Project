@@ -3,7 +3,7 @@ library("devtools")
 create_project("F:/Bioinformatics/VS_Code/Alice's_Adventures_in_Wonderland_Project")
 
 proj_get()
-proj_set()
+proj_set("F:/Bioinformatics/VS_Code/Alice's_Adventures_in_Wonderland_Project")
 
 use_git()
 
